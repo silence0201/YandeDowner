@@ -9,6 +9,7 @@
 import urllib
 import urllib.request
 import urllib.parse
+import time
 import re
 import os
 
@@ -24,10 +25,13 @@ def makeDir(dirName):
 
 
 def ask_tag():
-    key_word = input("请输入搜索的关键字:")  # 使用字典保存,方便以后格式化
+    tags_info = {}
+    tags = input("请输入搜索的关键字:")  # 使用字典保存,方便以后格式化
+    if len(tags) > 0:
+        tags_info["tags"] = tags
     url = yande_post_url
-    search_word = urllib.parse.urlencode(key_word)
-    full_url = url + "?tag=" + search_word
+    search_word = urllib.parse.urlencode(tags_info)
+    full_url = url + "?" + search_word
     return full_url
 
 
@@ -35,7 +39,10 @@ def check_tag(full_url):
     url_html = urllib.request.urlopen(full_url).read().decode('utf-8')
     list_tag = possible_tag(url_html)
     if list_tag == []:
-        makeDir(full_url[27:])
+        filename = time.strftime("%Y-%m-%d",time.localtime())
+        if len(full_url) > 27:
+            filename = full_url[27:]
+        makeDir(filename)
         return (url_html, full_url)
     else:
         total_tag = len(list_tag)
@@ -78,8 +85,8 @@ def down_image(link_list, filename_list):
             print("图片已经存在")
         else:
             urllib.request.urlretrieve(link, filename)
-            print("下载第%d张图片" % count)
-            count += 1
+            print("下载第%d张图片" % (count + 1))
+        count += 1
     else:
         print("全部%d已经下载完成" % count)
 
@@ -101,5 +108,5 @@ def next_page(url_page, page_number):
 
 def suggest_tag(tag_list, choose):
     url = yande_post_url
-    suggest_tag_url = url + '?tag=' + tag_list[choose]
+    suggest_tag_url = url + '?tags=' + tag_list[choose]
     return suggest_tag_url
