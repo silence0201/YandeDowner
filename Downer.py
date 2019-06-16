@@ -38,14 +38,20 @@ def ask_tag():
 def check_tag(full_url):
     url_html = urllib.request.urlopen(full_url).read().decode('utf-8')
     list_tag = possible_tag(url_html)
-    if list_tag == []:
-        filename = time.strftime("%Y-%m-%d",time.localtime())
+    if len(list_tag) == 0:
+        filename = time.strftime("%Y%m%d", time.localtime())
         if len(full_url) > 27:
             filename = full_url[27:]
         makeDir(filename)
         return (url_html, full_url)
     else:
+        count = 1
         total_tag = len(list_tag)
+        for tag in list_tag:
+            print(count, tag)
+            count += 1
+            if count > total_tag:
+                break
         choose_tag = int(input("请输入你要查找的Tag: "))
         while choose_tag > total_tag:
             choose_tag = int(input("请重新输入正确的Tag: "))
@@ -62,10 +68,10 @@ def possible_tag(url_html):
     tmp_tag = ''
     list_tag = []
     if 'Nobody' in url_html:
-        for x in possible_tag_re.findall(url_html):
-            tmp_tag = x
-        for x in find_tag_re.findall(tmp_tag):
-            list_tag.append(urllib.parse.unquote(x[11:]))
+        for tag_html in possible_tag_re.findall(url_html):
+            tmp_tag = tag_html
+        for tag_link in find_tag_re.findall(tmp_tag):
+            list_tag.append(urllib.parse.unquote(tag_link[11:]))
     return list_tag
 
 
@@ -82,13 +88,13 @@ def down_image(link_list, filename_list):
     for link in link_list:
         filename = filename_list[count]
         if os.path.exists(filename):
-            print("图片已经存在")
+            print("第%d张图片已经存在" % (count + 1))
         else:
             urllib.request.urlretrieve(link, filename)
             print("下载第%d张图片" % (count + 1))
         count += 1
     else:
-        print("全部%d已经下载完成" % count)
+        print("全部%d张图片下载完成" % count)
 
 
 def get_filename_list(link_list):
