@@ -17,11 +17,12 @@ yande_post_url = "https://yande.re/post"
 
 
 def makeDir(dirName):
-    if os.path.exists(dirName):
+    dirNameQ = dirName.replace("/", " ")
+    if os.path.exists(dirNameQ):
         print("文件夹已经存在")
     else:
-        os.mkdir(dirName)
-    os.chdir(dirName)
+        os.mkdir(dirNameQ)
+    os.chdir(dirNameQ)
 
 
 def ask_tag():
