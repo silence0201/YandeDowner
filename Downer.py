@@ -12,7 +12,13 @@ import urllib.parse
 import time
 import re
 import os
+import logging
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    filename='./log.txt',
+    filemode='w',
+    format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 yande_post_url = "https://yande.re/post"
 
 
@@ -91,6 +97,7 @@ def down_image(link_list, filename_list):
         if os.path.exists(filename):
             print("第%d张图片已经存在" % (count + 1))
         else:
+            logging.debug('downing:' + link)
             urllib.request.urlretrieve(link, filename)
             print("下载第%d张图片" % (count + 1))
         count += 1
